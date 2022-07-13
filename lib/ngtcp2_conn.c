@@ -11399,7 +11399,14 @@ int ngtcp2_conn_open_bidi_stream(ngtcp2_conn *conn, int64_t *pstream_id,
   ngtcp2_strm *strm;
 
   if (ngtcp2_conn_get_streams_bidi_left(conn) == 0) {
-    return NGTCP2_ERR_STREAM_ID_BLOCKED;
+    if (conn->local.bidi.max_streams == 0) {
+      return NGTCP2_ERR_STREAM_ID_BLOCKED;
+    }
+    if (conn->server) {
+      conn->local.bidi.next_stream_id = 1;
+    } else {
+      conn->local.bidi.next_stream_id = 0;
+    }
   }
 
   strm = ngtcp2_objalloc_strm_get(&conn->strm_objalloc);
@@ -11426,7 +11433,14 @@ int ngtcp2_conn_open_uni_stream(ngtcp2_conn *conn, int64_t *pstream_id,
   ngtcp2_strm *strm;
 
   if (ngtcp2_conn_get_streams_uni_left(conn) == 0) {
-    return NGTCP2_ERR_STREAM_ID_BLOCKED;
+    if (conn->local.uni.max_streams == 0) {
+      return NGTCP2_ERR_STREAM_ID_BLOCKED;
+    }
+    if (conn->server) {
+      conn->local.uni.next_stream_id = 3;
+    } else {
+      conn->local.uni.next_stream_id = 2;
+    }
   }
 
   strm = ngtcp2_objalloc_strm_get(&conn->strm_objalloc);

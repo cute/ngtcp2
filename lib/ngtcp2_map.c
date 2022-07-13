@@ -156,7 +156,7 @@ static int insert(ngtcp2_map_bucket *table, uint32_t tablelen,
   for (;;) {
     bkt = &table[idx];
 
-    if (bkt->data == NULL) {
+    if (bkt->data == NULL || bkt->key == key) {
       map_bucket_set_data(bkt, hash, key, data);
       return 0;
     }
